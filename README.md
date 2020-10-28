@@ -13,4 +13,4 @@
     
 ### Запуск
 
-``java -jar target\lab1.jar``
+``java -jar backend\target\lab1.jar``
