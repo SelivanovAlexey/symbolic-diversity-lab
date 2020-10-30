@@ -2,9 +2,13 @@ package ru.nntu.vst.dips.symbolicdiversity.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.web.multipart.MultipartException;
 import ru.nntu.vst.dips.symbolicdiversity.model.LabResponse;
+import ru.nntu.vst.dips.symbolicdiversity.model.Language;
 import ru.nntu.vst.dips.symbolicdiversity.model.Model;
+import ru.nntu.vst.dips.symbolicdiversity.model.ProcessingType;
+import ru.nntu.vst.dips.symbolicdiversity.rest.errorhandling.ApiException;
+import ru.nntu.vst.dips.symbolicdiversity.rest.errorhandling.BadRequestException;
+import ru.nntu.vst.dips.symbolicdiversity.rest.errorhandling.UnsupportedMediaTypeException;
 import ru.nntu.vst.dips.symbolicdiversity.service.SymbolService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +33,32 @@ public class Controller {
     @PostMapping(value = "/estimates", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public LabResponse getEstimates(@RequestPart(value = "file") MultipartFile file,
-                                    @RequestParam String lang,
                                     @RequestParam(value = "maxWindowSize", required = false, defaultValue = "30")
-                                            Integer maxWindowSize) throws IOException {
+                                            Integer maxWindowSize,
+                                    @RequestParam Language lang,
+                                    @RequestParam ProcessingType type) throws ApiException, IOException {
         if (!isPlaintextType(file))
-            throw new MultipartException("Wrong file content type. Only text/plain is applicable");
+            throw new UnsupportedMediaTypeException("Wrong file content type. Only text/plain is applicable");
 
         log.debug("started parsing file with name {}", file.getName());
         String input = IOUtils.toString(file.getInputStream(), StandardCharsets.UTF_8);
 
-        List<Model> result = service.calculateEntropy(input, lang, maxWindowSize);
-        Double maxEntropy = service.getMaxEntropyValue(result);
-        Double diversityValue = service.getSymbolicDiversityValue(maxEntropy);
+        List<Model> result;
+        if (type.equals(ProcessingType.words))
+            result = service.calculateEntropyWords(input, lang, maxWindowSize);
+        else
+            result = service.calculateEntropySymbols(input, maxWindowSize);
+
+        if (result.size() < 2) throw new BadRequestException("Too few words in file");
+
+        Double maxDiffEntropy = service.getMaxDiffEntropyValue(result);
+        Double diversityValue = service.getSymbolicDiversityValue(maxDiffEntropy);
+        Integer textLength = service.getLength();
 
         return LabResponse.builder()
                 .values(result)
-                .maxEntropyEstimate(maxEntropy)
+                .textLength(textLength)
+                .maxEntropyEstimate(maxDiffEntropy)
                 .symbolicDiversityValue(diversityValue)
                 .build();
 
@@ -52,7 +66,7 @@ public class Controller {
 
     private boolean isPlaintextType(@NonNull MultipartFile file) {
         return Optional.ofNullable(file.getContentType())
-                .orElseThrow(() -> new MultipartException("No input file"))
+                .orElseThrow(() -> new BadRequestException("No input file"))
                 .equals(MediaType.TEXT_PLAIN_VALUE);
     }
 }

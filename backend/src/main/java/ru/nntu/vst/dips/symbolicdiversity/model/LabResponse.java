@@ -15,7 +15,7 @@ public class LabResponse {
     List<Model> values;
     @JsonProperty("n")
     Integer textLength;
-    @JsonProperty("maxCm")
+    @JsonProperty("maxdCm")
     Double maxEntropyEstimate;
     @JsonProperty("mu")
     Double symbolicDiversityValue;
