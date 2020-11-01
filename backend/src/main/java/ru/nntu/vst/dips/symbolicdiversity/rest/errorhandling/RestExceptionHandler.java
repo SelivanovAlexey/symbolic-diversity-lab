@@ -47,6 +47,12 @@ public class RestExceptionHandler {
         return ResponseEntity.badRequest().body(buildErrorMessage(exception.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
+    @ExceptionHandler(UnsupportedMediaTypeException.class)
+    public ResponseEntity<Object> handleUnsupportedMediaTypeException(
+            UnsupportedMediaTypeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleInternalServerErrorException(

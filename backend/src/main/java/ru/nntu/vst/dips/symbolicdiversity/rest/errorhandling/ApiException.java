@@ -14,13 +14,6 @@ public class ApiException extends RuntimeException {
     private Integer code;
     private HttpStatus status;
 
-    public ApiException(String message, Throwable cause, HttpStatus status) {
-        super(message, cause);
-        this.status = status;
-        this.code = status.value();
-        this.timestamp = LocalDateTime.now().toString();
-    }
-
     public ApiException(String message, HttpStatus status) {
         super(message);
         this.status = status;
