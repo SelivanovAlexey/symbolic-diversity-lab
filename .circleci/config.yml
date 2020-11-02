@@ -3,11 +3,6 @@ version: 2.1
 orbs:
   maven: circleci/maven@0.0.12
   coveralls: coveralls/coveralls@1.0.6
-  
-jobs:
-  coveralls:
-    steps:
-      - coveralls/upload
 
 workflows:
   maven_test:
