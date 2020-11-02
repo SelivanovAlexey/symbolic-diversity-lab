@@ -1,8 +1,10 @@
 version: 2.1
 
- 
+orbs:
+  coveralls: coveralls/coveralls@1.0.6
+
 jobs:
-  maven/test:
+  build:
     docker:
     - image: circleci/openjdk:8-jdk-node
     steps:
