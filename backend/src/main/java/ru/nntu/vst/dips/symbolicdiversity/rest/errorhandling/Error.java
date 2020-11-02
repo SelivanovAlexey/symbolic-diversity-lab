@@ -1,11 +1,11 @@
 package ru.nntu.vst.dips.symbolicdiversity.rest.errorhandling;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
-@Value
+@Getter
 @Builder
-public class Error {
+class Error {
     String timestamp;
     Integer code;
     String status;
