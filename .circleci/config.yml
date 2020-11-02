@@ -28,7 +28,7 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
       - codecov/upload:
-          file: target/site/jacoco/jacoco.csv
+          file: target/site/jacoco/jacoco.xml
 
 workflows:
   main_flow:
