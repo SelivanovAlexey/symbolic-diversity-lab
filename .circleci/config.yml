@@ -29,6 +29,7 @@ jobs:
           path: target/surefire-reports
       - codecov/upload:
           file: './backend/target/site/jacoco/jacoco.xml'
+          token: 62f507ef-0ce6-48ec-a793-674ab9cde2c9
 
 workflows:
   main_flow:
