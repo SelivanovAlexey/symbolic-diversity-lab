@@ -20,7 +20,7 @@ jobs:
           command: mvn dependency:go-offline --settings 'pom.xml'
       - run:
           name: Run Tests
-          command: mvn verify --settings 'pom.xml'
+          command: mvn test --settings 'pom.xml'
       - save_cache:
           paths:
           - ~/.m2
@@ -28,7 +28,8 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
       - codecov/upload:
-          file: './target/site/jacoco/jacoco.xml'
+          file: './backend/target/site/jacoco/jacoco.xml'
+          token: 62f507ef-0ce6-48ec-a793-674ab9cde2c9
 
 workflows:
   main_flow:
