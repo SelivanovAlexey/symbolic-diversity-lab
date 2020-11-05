@@ -32,3 +32,4 @@ build/
 .vscode/
 
 /logs
+/backend/src/main/resouces/public
