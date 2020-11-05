@@ -79,8 +79,8 @@
           :labels="{
             xLabels: allValues.m,
             yLabels: 5,
-            yLabelsTextFormatter: val => Math.round(val * 100) / 100
-      }"
+            yLabelsTextFormatter: val=>Math.round(val * 100) / 100
+}"
           :min="0"
           :interactive="true" @mouse-move="onMouseMove">
       </trend-chart>
@@ -154,7 +154,7 @@ export default {
         dCm: [],
         m: []
       }
-      let url = new URL(`http://localhost:8081/api/estimates`);
+      let url = '/api/estimates';
       let dataFile = new FormData();
       dataFile.append('file', this.selectedFile);
       dataFile.append('lang', this.lang);
