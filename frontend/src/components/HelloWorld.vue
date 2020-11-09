@@ -119,10 +119,8 @@
               data: allValues.dCm,
               showPoints: true,
               smooth: false,
-
               className: 'curve2'
             }
-
           ]"
             :grid="{
             verticalLines: true,
@@ -154,10 +152,8 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import TrendChart from "vue-trend-chart";
-
 Vue.use(TrendChart);
 Vue.use(Vuetify);
-
 export default {
   name: 'HelloWorld',
   props: {
@@ -203,7 +199,6 @@ export default {
         }
       ],
       allItems: null,
-
     }
   },
   methods: {
@@ -212,7 +207,6 @@ export default {
       window.addEventListener('focus', () => {
         this.isSelecting = false
       }, { once: true });
-
       this.$refs.uploader.click()
     },
     onFileChanged(e) {
