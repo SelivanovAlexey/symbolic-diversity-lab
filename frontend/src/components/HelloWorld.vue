@@ -1,100 +1,153 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <v-container fluid>
-      <p>Type is {{ types || 'null' }}</p>
-      <v-radio-group
-          v-model="types"
-          mandatory
-      >
-        <v-radio
-            label="symbols"
-            value="symbols"
-        ></v-radio>
-        <v-radio
-            label="words"
-            value="words"
-        ></v-radio>
-      </v-radio-group>
-    </v-container>
-    <v-container fluid>
-      <p>Language is {{ lang || 'null' }}</p>
-      <v-radio-group
-          v-model="lang"
-          mandatory
-      >
-        <v-radio
-            label="English"
-            value="EN"
-        ></v-radio>
-        <v-radio
-            label="Russian"
-            value="RU"
-        ></v-radio>
-      </v-radio-group>
-    </v-container>
-    <v-container fluid>
-      <v-btn
-          color="primary"
-          class="text-none"
-          round
-          depressed
-          :loading="isSelecting"
-          @click="onButtonClick"
-      >
-        <v-icon left>mdi-cloud-upload</v-icon>
-        testtest
-      </v-btn>
-      <input
-          ref="uploader"
-          class="d-none"
-          type="file"
-          @change="onFileChanged"
-      >
-    </v-container>
-    <v-btn v-on:click="submit()">Submit</v-btn>
-    <div class="random" v-if="loaded">
-      <trend-chart
-          :datasets="[
+  <v-app id="inspire">
+    <div class="hello">
+      <h1 class="text-center">{{msg}}</h1>
+      <v-row style="display: flex; justify-content: space-between">
+        <div>
+          <v-container fluid :justify="'space-around'">
+            <p>Type is {{ types || 'null' }}</p>
+            <v-radio-group
+                v-model="types"
+                mandatory
+            >
+              <v-radio
+                  label="symbols"
+                  value="symbols"
+              ></v-radio>
+              <v-radio
+                  label="words"
+                  value="words"
+              ></v-radio>
+            </v-radio-group>
+          </v-container>
+          <v-container fluid :justify="'space-around'">
+            <p>Language is {{ lang || 'null' }}</p>
+            <v-radio-group
+                v-model="lang"
+                mandatory
+            >
+              <v-radio
+                  label="English"
+                  value="EN"
+              ></v-radio>
+              <v-radio
+                  label="Russian"
+                  value="RU"
+              ></v-radio>
+            </v-radio-group>
+          </v-container>
+          <v-container fluid :justify="'space-around'">
+            <v-btn
+                color="primary"
+                class="text-none"
+                round
+                depressed
+                :loading="isSelecting"
+                @click="onButtonClick"
+            >
+              <v-icon left>mdi-cloud-upload</v-icon>
+              {{labelButton}}
+            </v-btn>
+            <input
+                ref="uploader"
+                class="d-none"
+                type="file"
+                @change="onFileChanged"
+            >
+          </v-container>
+          <v-btn color="warning" v-on:click="submit()">Submit</v-btn>
+        </div>
+        <div v-if="loaded">
+          <v-chip
+              class="ma-2"
+              color="orange"
+          >
+            maxdCm: {{maxdCm}}
+          </v-chip>
+          <v-chip
+              class="ma-2"
+              color="orange"
+          >
+            mu: {{mu}}
+          </v-chip>
+          <v-chip
+              class="ma-2"
+              color="orange"
+          >
+            n: {{n}}
+          </v-chip>
+          <v-data-table
+              dense
+              :headers="headers"
+              :items="allItems"
+              item-key="name"
+              class="elevation-1"
+          ></v-data-table>
+        </div>
+      </v-row>
+      <div class="random" v-if="loaded">
+        <div class="text-center">
+          <v-chip
+              class="ma-2"
+              color="green"
+              text-color="white"
+          >
+            m: {{indexValue}}
+          </v-chip>
+          <v-chip
+              class="ma-2"
+              color="primary"
+          >
+            Active Cm: {{activeCm}}
+          </v-chip>
+          <v-chip
+              class="ma-2"
+              color="primary"
+          >
+            Active dCm: {{activedCm}}
+          </v-chip>
+        </div>
+        <trend-chart
+            :datasets="[
             {
               data: allValues.Cm,
               showPoints: true,
-              smooth: true,
-              fill: true,
-              className: 'Cm'
+              smooth: false,
+              className: 'curve1'
             },
             {
               data: allValues.dCm,
               showPoints: true,
-              smooth: true,
-              fill: true,
-              className: 'dCm'
+              smooth: false,
+
+              className: 'curve2'
             }
 
           ]"
-          :grid="{
+            :grid="{
             verticalLines: true,
             horizontalLines: true
   }"
-          :labels="{
+            :labels="{
             xLabels: allValues.m,
             yLabels: 5,
             yLabelsTextFormatter: val => Math.round(val * 100) / 100
       }"
-          :min="0"
-          :interactive="true" @mouse-move="onMouseMove">
-      </trend-chart>
-      <div id="pop" role="tooltip" ref="tooltip" class="tooltip" :class="{'is-active': tooltipData}">
-        <div class="tooltip-container" v-if="tooltipData">
-          <strong>{{labels.xLabels[tooltipData.index]}}</strong>
-          <div class="tooltip-data">
-            <div class="tooltip-data-item tooltip-data-item--1">{{tooltipData.data[0]}}</div>
-            <div class="tooltip-data-item tooltip-data-item--2">{{tooltipData.data[1]}}</div>
+            :min="0"
+            :interactive="true" @mouse-move="onMouseMove" class="random-chart">
+        </trend-chart>
+        <div id="pop" role="tooltip" ref="tooltip" class="tooltip" :class="{'is-active': tooltipData}">
+          <div class="tooltip-container" v-if="tooltipData">
+            <strong>{{labels.xLabels[tooltipData.index]}}</strong>
+            <div class="tooltip-data">
+              <div class="tooltip-data-item tooltip-data-item--1">{{tooltipData.data[0]}}</div>
+              <div class="tooltip-data-item tooltip-data-item--2">{{tooltipData.data[1]}}</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -128,7 +181,29 @@ export default {
       maxdCm: null,
       tooltipData: null,
       popper: null,
-      popperIsActive: false
+      popperIsActive: false,
+      indexValue: null,
+      activeCm: null,
+      activedCm: null,
+      labelButton: 'Choose the file',
+      headers: [
+        {
+          text: 'm',
+          align: 'start',
+          sortable: false,
+          value: 'm',
+        },
+        {
+          text: 'C(m)',
+          value: 'Cm'
+        },
+        {
+          text: 'dC(m)',
+          value: 'dCm'
+        }
+      ],
+      allItems: null,
+
     }
   },
   methods: {
@@ -142,9 +217,15 @@ export default {
     },
     onFileChanged(e) {
       this.selectedFile = e.target.files[0];
+      this.labelButton = this.selectedFile.name;
     },
     onMouseMove(params) {
       console.log(params);
+      if (params.index === 0 || params.index) {
+        this.indexValue = params.index + 1;
+        this.activeCm = params.data[0].value;
+        this.activedCm = params.data[1].value;
+      }
     },
     submit () {
       let self = this;
@@ -154,7 +235,9 @@ export default {
         dCm: [],
         m: []
       }
-      let url = new URL(`http://localhost:8081/api/estimates`);
+      self.allItems = [];
+      this.labelButton = "Choose the file";
+      let url = new URL(`/api/estimates`);
       let dataFile = new FormData();
       dataFile.append('file', this.selectedFile);
       dataFile.append('lang', this.lang);
@@ -165,10 +248,18 @@ export default {
       })
           .then(response => response.json())
           .then(data => {
+            self.maxdCm = data.maxdCm;
+            self.n = data.n;
+            self.mu = data.mu;
             data.values.forEach(el => {
               self.allValues.Cm.push({value: el.Cm});
               self.allValues.dCm.push({value:el.dCm});
               self.allValues.m.push( String(el.m));
+              self.allItems.push({
+                m: el.m,
+                Cm: el.Cm,
+                dCm: el.dCm
+              });
             });
             self.loaded = true;
           });
@@ -176,46 +267,83 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-strong {
-  font-weight: 600;
-}
-
-body {
-  padding: 0;
-  margin: 0;
-  font-family: "Source Sans Pro", sans-serif;
-  color: #2f4053;
-}
-.random {
-  width: 100%;
-}
-.labels {
-  stroke: rgba(0, 0, 0, 0.05);
-}
-.active-line {
-  stroke: rgba(0, 0, 0, 0.2);
-}
-.point {
-  stroke-width: 2;
-  transition: stroke-width 0.2s;
-}
-.point.is-active {
-  stroke-width: 5;
-}
+<style lang="scss" scoped>
+  .random {
+    width: 100%;
+    .vtc {
+      height: 250px;
+      font-size: 12px;
+      @media (min-width: 699px) {
+        height: 320px;
+      }
+    }
+    .labels {
+      stroke: rgba(0, 0, 0, 0.05);
+    }
+    .active-line {
+      stroke: rgba(0, 0, 0, 0.2);
+    }
+    .point {
+      stroke-width: 2;
+      transition: stroke-width 0.2s;
+    }
+    .point.is-active {
+      stroke-width: 5;
+    }
+    .curve1 {
+      .stroke {
+        stroke: #fbac91;
+        stroke-width: 2;
+      }
+      .point {
+        fill: #fbac91;
+        stroke: #fbac91;
+      }
+    }
+    .curve2 {
+      .stroke {
+        stroke: #fbe1b6;
+        stroke-width: 2;
+      }
+      .point {
+        fill: #fbe1b6;
+        stroke: #fbe1b6;
+      }
+    }
+    .tooltip {
+      &:not(.is-active) {
+        display: none;
+      }
+      padding: 10px;
+      background: #fff;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+      &-data {
+        display: flex;
+        &-item {
+          display: flex;
+          align-items: center;
+          &:not(:first-child) {
+            margin-left: 20px;
+          }
+          &:before {
+            content: "";
+            display: block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+          }
+          &--1:before {
+            background: #fbac91;
+          }
+          &--2:before {
+            background: #fbe1b6;
+          }
+          &--3:before {
+            background: #7fdfd4;
+          }
+        }
+      }
+    }
+  }
 </style>
