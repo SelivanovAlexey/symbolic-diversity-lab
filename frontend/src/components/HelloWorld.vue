@@ -231,7 +231,7 @@ export default {
       }
       self.allItems = [];
       this.labelButton = "Choose the file";
-      let url = new URL(`/api/estimates`);
+      let url = "/api/estimates";
       let dataFile = new FormData();
       dataFile.append('file', this.selectedFile);
       dataFile.append('lang', this.lang);
