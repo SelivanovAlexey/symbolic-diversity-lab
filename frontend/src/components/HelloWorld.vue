@@ -2,36 +2,36 @@
   <v-app id="inspire">
     <div class="hello">
       <h1 class="text-center">{{msg}}</h1>
-      <v-row style="display: flex; justify-content: space-between">
+      <v-col style="display: flex; justify-content: space-between">
         <div>
           <v-container fluid :justify="'space-around'">
-            <p>Type is {{ types || 'null' }}</p>
+            <b>Тип обхода</b>
             <v-radio-group
                 v-model="types"
                 mandatory
             >
               <v-radio
-                  label="symbols"
+                  label="по символам"
                   value="symbols"
               ></v-radio>
               <v-radio
-                  label="words"
+                  label="по словам"
                   value="words"
               ></v-radio>
             </v-radio-group>
           </v-container>
           <v-container fluid :justify="'space-around'">
-            <p>Language is {{ lang || 'null' }}</p>
+            <b>Язык</b>
             <v-radio-group
                 v-model="lang"
                 mandatory
             >
               <v-radio
-                  label="English"
+                  label="english"
                   value="EN"
               ></v-radio>
               <v-radio
-                  label="Russian"
+                  label="русский"
                   value="RU"
               ></v-radio>
             </v-radio-group>
@@ -55,27 +55,9 @@
                 @change="onFileChanged"
             >
           </v-container>
-          <v-btn color="warning" v-on:click="submit()">Submit</v-btn>
+          <v-container><v-btn color="warning" v-on:click="submit()">Submit</v-btn></v-container>
         </div>
         <div v-if="loaded">
-          <v-chip
-              class="ma-2"
-              color="orange"
-          >
-            maxdCm: {{maxdCm}}
-          </v-chip>
-          <v-chip
-              class="ma-2"
-              color="orange"
-          >
-            mu: {{mu}}
-          </v-chip>
-          <v-chip
-              class="ma-2"
-              color="orange"
-          >
-            n: {{n}}
-          </v-chip>
           <v-data-table
               dense
               :headers="headers"
@@ -84,27 +66,26 @@
               class="elevation-1"
           ></v-data-table>
         </div>
-      </v-row>
+      </v-col>
       <div class="random" v-if="loaded">
         <div class="text-center">
           <v-chip
-              class="ma-2"
-              color="green"
-              text-color="white"
+                  class="ma-2"
+                  color="#C8F89A"
           >
-            m: {{indexValue}}
+            Максимальная инверсная разность: {{maxdCm}}
           </v-chip>
           <v-chip
-              class="ma-2"
-              color="primary"
+                  class="ma-2"
+                  color="#C8F89A"
           >
-            Active Cm: {{activeCm}}
+            Мера символьного разнообразия: {{mu}}
           </v-chip>
           <v-chip
-              class="ma-2"
-              color="primary"
+                  class="ma-2"
+                  color="#C8F89A"
           >
-            Active dCm: {{activedCm}}
+            Количесвто элементов: {{n}}
           </v-chip>
         </div>
         <trend-chart
@@ -128,8 +109,8 @@
   }"
             :labels="{
             xLabels: allValues.m,
-            yLabels: 5,
-            yLabelsTextFormatter: val => Math.round(val * 100) / 100
+            yLabels: 11,
+            yLabelsTextFormatter: val => val.toFixed(2)
       }"
             :min="0"
             :interactive="true" @mouse-move="onMouseMove" class="random-chart">
@@ -235,10 +216,11 @@ export default {
       let dataFile = new FormData();
       dataFile.append('file', this.selectedFile);
       dataFile.append('lang', this.lang);
-      dataFile.append('type', this.types)
+      dataFile.append('type', this.types);
+      dataFile.append('maxWindowSize', 15);
       fetch(url, {
         method: 'POST',
-        body: dataFile
+        body: dataFile,
       })
           .then(response => response.json())
           .then(data => {
@@ -248,11 +230,11 @@ export default {
             data.values.forEach(el => {
               self.allValues.Cm.push({value: el.Cm});
               self.allValues.dCm.push({value:el.dCm});
-              self.allValues.m.push( String(el.m));
+              self.allValues.m.push(String(el.m));
               self.allItems.push({
                 m: el.m,
-                Cm: el.Cm,
-                dCm: el.dCm
+                Cm: el.Cm !== undefined ? el.Cm.toFixed(3) : null,
+                dCm: el.dCm !== undefined ? el.dCm.toFixed(3) : null
               });
             });
             self.loaded = true;
@@ -261,9 +243,11 @@ export default {
   },
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+  .random-chart { width: 50%; }
   .random {
     width: 100%;
+    text-align: center;
     .vtc {
       height: 250px;
       font-size: 12px;
@@ -286,22 +270,22 @@ export default {
     }
     .curve1 {
       .stroke {
-        stroke: #fbac91;
+        stroke: #e42020;
         stroke-width: 2;
       }
       .point {
-        fill: #fbac91;
-        stroke: #fbac91;
+        fill: #e42020;
+        stroke: #e42020;
       }
     }
     .curve2 {
       .stroke {
-        stroke: #fbe1b6;
+        stroke: #177900;
         stroke-width: 2;
       }
       .point {
-        fill: #fbe1b6;
-        stroke: #fbe1b6;
+        fill: #177900;
+        stroke: #177900;
       }
     }
     .tooltip {
